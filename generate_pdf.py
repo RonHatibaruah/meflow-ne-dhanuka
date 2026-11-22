@@ -287,7 +287,9 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
     story.append(budget_table)
     story.append(Spacer(1, 10))
 
-    if os.path.exists('assets/budget_breakdown.png'):
+    if os.path.exists('assets/infographic_06_budget_allocation.jpg'):
+        story.append(Image('assets/infographic_06_budget_allocation.jpg', width=470, height=263))
+    elif os.path.exists('assets/budget_breakdown.png'):
         story.append(Image('assets/budget_breakdown.png', width=450, height=270))
         story.append(Spacer(1, 10))
 
@@ -301,21 +303,27 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
     story.append(Paragraph("1. Regional Multi-Tier Supply Chain & Corridor Vulnerability Map", h2_style))
     story.append(Paragraph("The diagram below illustrates the hierarchical flow from G.R. Dhanuka Group central C&F hubs to district staging depots and remote health facilities across Northeast India, highlighting high-hazard flood corridors (e.g. NH-6 via Meghalaya).", body_style))
     story.append(Spacer(1, 4))
-    if os.path.exists('assets/multi_tier_network.png'):
+    if os.path.exists('assets/infographic_01_supply_network.jpg'):
+        story.append(Image('assets/infographic_01_supply_network.jpg', width=470, height=263))
+    elif os.path.exists('assets/multi_tier_network.png'):
         story.append(Image('assets/multi_tier_network.png', width=450, height=225))
         story.append(Spacer(1, 8))
 
     story.append(Paragraph("2. Enterprise Solution Architecture Blueprint", h2_style))
     story.append(Paragraph("The platform connects legacy stockist ERPs (Marg, Tally, Busy) and real-time environmental APIs (IMD, CWC, ASDMA) to our cloud-native AI forecasting and optimization pipeline.", body_style))
     story.append(Spacer(1, 4))
-    if os.path.exists('assets/architecture_diagram.png'):
+    if os.path.exists('assets/infographic_02_solution_architecture.jpg'):
+        story.append(Image('assets/infographic_02_solution_architecture.jpg', width=470, height=263))
+    elif os.path.exists('assets/architecture_diagram.png'):
         story.append(Image('assets/architecture_diagram.png', width=450, height=245))
         story.append(Spacer(1, 8))
 
     story.append(Paragraph("3. Cross-Tier Expiry Arbitrage & FEFO Rebalancing Mechanism", h2_style))
     story.append(Paragraph("Graph-theoretic matching re-routes near-expiry batches from slow-moving nodes to high-velocity emergency wards, eliminating waste and averting stockouts.", body_style))
     story.append(Spacer(1, 4))
-    if os.path.exists('assets/arbitrage_flow.png'):
+    if os.path.exists('assets/infographic_03_expiry_arbitrage.jpg'):
+        story.append(Image('assets/infographic_03_expiry_arbitrage.jpg', width=470, height=263))
+    elif os.path.exists('assets/arbitrage_flow.png'):
         story.append(Image('assets/arbitrage_flow.png', width=450, height=225))
         story.append(Spacer(1, 8))
 
@@ -356,26 +364,34 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
     story.append(Paragraph("5. Discrete-Event Highway Corridor Flood Simulation (Guwahati -> Silchar / Barak Valley)", h2_style))
     story.append(Paragraph("We simulated a realistic 21-day washout scenario along NH-6 (connecting Guwahati through Meghalaya into Barak Valley, Tripura, and Mizoram) during peak July monsoon. Under standard heuristics, retail pharmacies experienced catastrophic stockouts (41.8% stockout rate). MediFlow-NE’s proactive pre-positioning triggered 14 days prior maintained a 94.6% in-stock service level throughout the isolation period.", body_style))
     story.append(Spacer(1, 4))
-    if os.path.exists('assets/simulation_timeline.png'):
+    if os.path.exists('assets/infographic_04_flood_simulation.jpg'):
+        story.append(Image('assets/infographic_04_flood_simulation.jpg', width=470, height=263))
+    elif os.path.exists('assets/simulation_timeline.png'):
         story.append(Image('assets/simulation_timeline.png', width=450, height=230))
         story.append(Spacer(1, 8))
 
     story.append(Paragraph("6. Cold-Chain IoT Architecture for Temperature-Sensitive Biologics (2°C–8°C)", h2_style))
     story.append(Paragraph("Vital formulations like Insulin, Anti-Snake Venom, and pediatric vaccines require continuous thermal integrity. MediFlow-NE incorporates cellular IoT telemetry, automated transit excursion flags, and instant batch quarantine locks in connected billing ERPs.", body_style))
     story.append(Spacer(1, 4))
-    if os.path.exists('assets/cold_chain_iot.png'):
+    if os.path.exists('assets/infographic_05_cold_chain_iot.jpg'):
+        story.append(Image('assets/infographic_05_cold_chain_iot.jpg', width=470, height=263))
+    elif os.path.exists('assets/cold_chain_iot.png'):
         story.append(Image('assets/cold_chain_iot.png', width=450, height=215))
         story.append(Spacer(1, 8))
 
     story.append(Paragraph("7. Multi-Tier Interface Architecture Across User Personas", h2_style))
     story.append(Paragraph("The platform delivers tailored, frictionless touchpoints across the entire supply hierarchy—from Central C&F dispatchers down to rural village chemists and cut-off PHC pharmacists.", body_style))
     story.append(Spacer(1, 4))
-    if os.path.exists('assets/user_persona_matrix.png'):
+    if os.path.exists('assets/infographic_07_user_personas.jpg'):
+        story.append(Image('assets/infographic_07_user_personas.jpg', width=470, height=263))
+    elif os.path.exists('assets/user_persona_matrix.png'):
         story.append(Image('assets/user_persona_matrix.png', width=450, height=215))
         story.append(Spacer(1, 8))
 
     story.append(Paragraph("8. 12-Month Phased Implementation Roadmap", h2_style))
-    if os.path.exists('assets/timeline_gantt.png'):
+    if os.path.exists('assets/infographic_08_implementation_roadmap.jpg'):
+        story.append(Image('assets/infographic_08_implementation_roadmap.jpg', width=470, height=263))
+    elif os.path.exists('assets/timeline_gantt.png'):
         story.append(Image('assets/timeline_gantt.png', width=450, height=190))
         story.append(Spacer(1, 8))
 
