@@ -266,19 +266,19 @@ sections["11. Innovation & differentiation"] = """MediFlow-NE introduces transfo
 • Proprietary IP: Custom loss functions for epidemic-aware quantile time-series forecasting, topological transit disruption risk scoring algorithms, and multi-tier pharmaceutical rebalancing heuristics.
 • Open-Source Foundation: Built on battle-tested open-source libraries (PyTorch-Forecasting, LightGBM, Google OR-Tools, PostgreSQL/TimescaleDB), ensuring complete freedom from vendor lock-in and rapid extensibility."""
 
-sections["12. Resources, risks & pilot validation"] = """Indicative Resource & Budget Allocation (Total Grant: ₹40.00 Lakhs):
-The ₹40.00 Lakhs grant is strategically allocated to maximize deep-tech engineering and real-world deployment:
-1. Technical Engineering Team Cost: ₹20.00 Lakhs (50.0%)
-   - Dedicated full-time engineering manpower: Project Lead & Supply Chain Architect (₹6.0L), Lead AI/ML Research Engineer (₹6.0L), Senior Full-Stack & Cloud Engineer (₹5.0L), and Data/Frontend Engineers (₹3.0L) across core development cycles.
-2. AI/ML Predictive Models & Data Pipelines: ₹6.50 Lakhs (16.25%)
+sections["12. Resources, risks & pilot validation"] = """Indicative Resource & Budget Allocation (Total Grant: Rs. 40.00 Lakhs):
+The Rs. 40.00 Lakhs grant is strategically allocated to maximize deep-tech engineering and real-world deployment:
+1. Technical Engineering Team Cost: Rs. 20.00 Lakhs (50.0%)
+   - Dedicated full-time engineering manpower: Project Lead & Supply Chain Architect (Rs. 6.0L), Lead AI/ML Research Engineer (Rs. 6.0L), Senior Full-Stack & Cloud Engineer (Rs. 5.0L), and Data/Frontend Engineers (Rs. 3.0L) across core development cycles.
+2. AI/ML Predictive Models & Data Pipelines: Rs. 6.50 Lakhs (16.25%)
    - Model training compute (GPU clusters), geospatial data ingestion pipelines, weather/flood API integrations, and model optimization.
-3. Field Pilot Deployment & Stockist Onboarding: ₹5.00 Lakhs (12.50%)
+3. Field Pilot Deployment & Stockist Onboarding: Rs. 5.00 Lakhs (12.50%)
    - On-ground deployment across Guwahati central C&F hub, Dibrugarh, and Silchar; local coordinator stipend, distributor training workshops, user onboarding materials, and hardware/POS connectors.
-4. Cloud Infrastructure, Edge Sync & Server Hosting: ₹4.50 Lakhs (11.25%)
+4. Cloud Infrastructure, Edge Sync & Server Hosting: Rs. 4.50 Lakhs (11.25%)
    - Tier-4 domestic cloud hosting (AWS Mumbai/MeitY cloud), TimescaleDB time-series instances, Kubernetes clusters, WhatsApp Business API messaging credits, and edge sync infrastructure for 12 months.
-5. Quality Assurance, Security Audits, GxP Compliance & Contingency: ₹4.00 Lakhs (10.00%)
+5. Quality Assurance, Security Audits, GxP Compliance & Contingency: Rs. 4.00 Lakhs (10.00%)
    - Third-party VAPT cybersecurity audit, GxP validation documentation, legal/compliance advisory, and operational contingency buffer.
-Total: ₹40.00 Lakhs (100.0%).
+Total: Rs. 40.00 Lakhs (100.0%).
 
 Key Risks & Mitigations:
 1. Risk: Low digital adoption or resistance from traditional stockists.
@@ -310,8 +310,8 @@ with open("PROPOSAL_FORM_COPY_PASTE.md", "w") as f:
     f.write("**Problem Statement:** NESFIC-I-09 - Improving Medicine Demand Forecasting and Inventory Availability Across Northeast India\n")
     f.write("**Sponsoring Partner:** G.R. Dhanuka Group / Assam Innovation & Startup Foundation (NESFIC 2026)\n")
     f.write("**Solution Title:** MediFlow-NE: AI-Powered Regional Pharmaceutical Demand Forecasting & Multi-Echelon Inventory Optimization\n")
-    f.write("**Total Problem Statement Grant:** ₹40.00 Lakhs\n")
-    f.write("**Technical Engineering Team Cost:** ₹20.00 Lakhs (50%)\n\n---\n\n")
+    f.write("**Total Problem Statement Grant:** Rs. 40.00 Lakhs\n")
+    f.write("**Technical Engineering Team Cost:** Rs. 20.00 Lakhs (50%)\n\n---\n\n")
     
     for title, text in sections.items():
         wcount = len(re.findall(r'\b[\w\'-]+\b', text))
@@ -327,7 +327,7 @@ with open("PROPOSAL_FORM_COPY_PASTE.txt", "w") as f:
     f.write("NESFIC-I-09: PROPOSAL FORM SUBMISSION TEXT (READY TO COPY & PASTE)\n")
     f.write("Problem Statement: Improving Medicine Demand Forecasting and Inventory Availability Across Northeast India\n")
     f.write("Sponsoring Partner: G.R. Dhanuka Group | NESFIC 2026\n")
-    f.write("Total Grant: ₹40.00 Lakhs | Technical Engineering Team Cost: ₹20.00 Lakhs\n")
+    f.write("Total Grant: Rs. 40.00 Lakhs | Technical Engineering Team Cost: Rs. 20.00 Lakhs\n")
     f.write("="*80 + "\n\n")
     
     for title, text in sections.items():

@@ -183,9 +183,9 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
     # Executive Overview Metadata Box
     meta_data = [
         [Paragraph("Challenge Track:", meta_label), Paragraph("NESFIC-I-09 (Industry Track - Healthcare & Supply Chain)", meta_val),
-         Paragraph("Total Grant Request:", meta_label), Paragraph("<b>₹40.00 Lakhs</b> (Grant Cap)", meta_val)],
+         Paragraph("Total Grant Request:", meta_label), Paragraph("<b>Rs. 40.00 Lakhs</b> (Grant Cap)", meta_val)],
         [Paragraph("Target Partner:", meta_label), Paragraph("G.R. Dhanuka Group (C&F Depots & Distribution Network)", meta_val),
-         Paragraph("Technical Eng. Cost:", meta_label), Paragraph("<b>₹20.00 Lakhs</b> (50% of budget)", meta_val)],
+         Paragraph("Technical Eng. Cost:", meta_label), Paragraph("<b>Rs. 20.00 Lakhs</b> (50% of budget)", meta_val)],
         [Paragraph("Proposed Solution:", meta_label), Paragraph("<b>MediFlow-NE</b> (AI Forecasting & MEIO Platform)", meta_val),
          Paragraph("Pilot Deployment:", meta_label), Paragraph("Guwahati C&F Hub + Dibrugarh & Silchar Corridors", meta_val)],
         [Paragraph("Core Technologies:", meta_label), Paragraph("Temporal Fusion Transformers (TFT), MILP MEIO, Offline PWA", meta_val),
@@ -230,45 +230,45 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
 
     story.append(PageBreak())
 
-    # Part 2: Indicative Budget Allocation (₹40 Lakhs Breakdown)
+    # Part 2: Indicative Budget Allocation (Rs. 40 Lakhs Breakdown)
     story.append(Paragraph("PART 2: INDICATIVE RESOURCE & BUDGET ALLOCATION", h1_style))
-    story.append(Paragraph("The proposed budget strictly adheres to the ₹40.00 Lakhs NESFIC problem statement grant framework, prioritizing technical engineering manpower (₹20.00 Lakhs / 50%) while provisioning adequate resources for AI training, cloud hosting, field pilot deployment, and GxP compliance.", body_style))
+    story.append(Paragraph("The proposed budget strictly adheres to the Rs. 40.00 Lakhs NESFIC problem statement grant framework, prioritizing technical engineering manpower (Rs. 20.00 Lakhs / 50%) while provisioning adequate resources for AI training, cloud hosting, field pilot deployment, and GxP compliance.", body_style))
     story.append(Spacer(1, 6))
 
     budget_table_data = [
         [Paragraph("Cost Head / Budget Category", table_header), 
          Paragraph("Detailed Scope & Justification", table_header), 
-         Paragraph("Allocation (₹)", table_header), 
+         Paragraph("Allocation (Rs.)", table_header), 
          Paragraph("% Total", table_header)],
         
         [Paragraph("<b>1. Technical Engineering Team</b>", table_cell_bold),
-         Paragraph("Core Full-Stack & AI Engineers: Project Lead/SCM Architect (₹6.0L), Lead AI/ML Research Engineer (₹6.0L), Senior Full-Stack/Cloud Engineer (₹5.0L), Data Integration & Offline PWA Developers (₹3.0L) over 12 months.", table_cell),
-         Paragraph("<b>₹20,00,000</b>", table_cell_bold),
+         Paragraph("Core Full-Stack & AI Engineers: Project Lead/SCM Architect (Rs. 6.0L), Lead AI/ML Research Engineer (Rs. 6.0L), Senior Full-Stack/Cloud Engineer (Rs. 5.0L), Data Integration & Offline PWA Developers (Rs. 3.0L) over 12 months.", table_cell),
+         Paragraph("<b>Rs. 20,00,000</b>", table_cell_bold),
          Paragraph("<b>50.00%</b>", table_cell)],
 
         [Paragraph("<b>2. AI/ML Models & Data Pipelines</b>", table_cell_bold),
          Paragraph("GPU cloud instances for training Temporal Fusion Transformers (TFT), historical weather & flood telemetry ETL pipelines, IMD & CWC scraper infrastructure, OR-Tools optimization engine.", table_cell),
-         Paragraph("₹6,50,000", table_cell),
+         Paragraph("Rs. 6,50,000", table_cell),
          Paragraph("16.25%", table_cell)],
 
         [Paragraph("<b>3. Field Pilot & Stockist Onboarding</b>", table_cell_bold),
          Paragraph("On-ground deployment across Guwahati C&F hub, Dibrugarh & Silchar corridors; Guwahati-based field operations coordinator, distributor training workshops, POS connector installation.", table_cell),
-         Paragraph("₹5,00,000", table_cell),
+         Paragraph("Rs. 5,00,000", table_cell),
          Paragraph("12.50%", table_cell)],
 
         [Paragraph("<b>4. Cloud Infrastructure & Edge Hosting</b>", table_cell_bold),
          Paragraph("MeitY-empanelled / AWS Mumbai Tier-4 cloud hosting, PostgreSQL/TimescaleDB time-series database instances, Kubernetes cluster, Redis caching, WhatsApp Business API messaging credits for 12 months.", table_cell),
-         Paragraph("₹4,50,000", table_cell),
+         Paragraph("Rs. 4,50,000", table_cell),
          Paragraph("11.25%", table_cell)],
 
         [Paragraph("<b>5. QA, Security Audit & GxP Compliance</b>", table_cell_bold),
          Paragraph("Third-party VAPT cybersecurity audit, GxP/CDSCO compliance documentation, DPDP Act 2023 legal audit, software certification, and contingency buffer.", table_cell),
-         Paragraph("₹4,00,000", table_cell),
+         Paragraph("Rs. 4,00,000", table_cell),
          Paragraph("10.00%", table_cell)],
 
         [Paragraph("<b>TOTAL GRANT BUDGET</b>", table_header),
          Paragraph("<b>Comprehensive 12-Month Development, Field Pilot & Deployment</b>", table_header),
-         Paragraph("<b>₹40,00,000</b>", table_header),
+         Paragraph("<b>Rs. 40,00,000</b>", table_header),
          Paragraph("<b>100.00%</b>", table_header)]
     ]
 
