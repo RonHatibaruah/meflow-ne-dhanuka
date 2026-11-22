@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediFlow-NE | AI Medicine Demand Forecasting & Multi-Echelon Inventory Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet Map CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); }
+        #supplyMap { height: 420px; width: 100%; border-radius: 0.75rem; z-index: 10; }
+        .pulse-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Header -->
+    <header class="glass-panel border-b border-slate-700/60 sticky top-0 z-50 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center space-x-3.5">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-cyan-500 to-teal-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <i data-lucide="activity" class="w-6 h-6 text-white"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        MediFlow<span class="text-cyan-400">-NE</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono">v1.2 MVP</span>
+                    </h1>
+                </div>
+                <p class="text-xs text-slate-400">AI Demand Forecasting & Multi-Echelon Inventory Platform | NESFIC-I-09 (G.R. Dhanuka Group)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-dot"></span>
+                <span class="text-slate-300">Hub: <strong class="text-white">Guwahati Central C&F</strong></span>
+                <span class="text-slate-500">|</span>
+                <span class="text-slate-300">Weather API: <strong class="text-emerald-400">IMD Live Synced</strong></span>
+            </div>
+            <button onclick="triggerDemoPrepositioning()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/30 flex items-center space-x-1.5 transition">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                <span>Simulate Pre-Monsoon Pre-Positioning</span>
+            </button>
+            <a href="../NESFIC_I_09_Dhanuka_Proposal_PoW.pdf" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs font-medium flex items-center space-x-1.5 transition">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span>Proposal PDF</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 p-6 space-y-6 max-w-7xl mx-auto w-full">
+
+        <!-- KPI Strip -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="glass-panel p-4 rounded-xl border border-slate-700/50">
+                <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+                    <span>Network In-Stock Rate</span>
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                </div>
+                <div class="text-2xl font-bold text-white" id="kpiInStock">96.4%</div>
+                <div class="text-[11px] text-emerald-400 flex items-center mt-1">
+                    <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +18.2% vs Manual Baseline
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-xl border border-slate-700/50">
+                <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+                    <span>Forecast Error (MAPE)</span>
+                    <i data-lucide="target" class="w-4 h-4 text-cyan-400"></i>
+                </div>
+                <div class="text-2xl font-bold text-cyan-400">11.2%</div>
+                <div class="text-[11px] text-slate-400 flex items-center mt-1">
+                    <span>TFT Model (down from 36.5%)</span>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-xl border border-slate-700/50">
+                <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+                    <span>Flood Corridor Alerts</span>
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+                </div>
+                <div class="text-2xl font-bold text-amber-400" id="kpiAlerts">2 Active</div>
+                <div class="text-[11px] text-amber-300/80 flex items-center mt-1 truncate">
+                    <span>NH-6 (Barak) & NH-29</span>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-xl border border-slate-700/50">
+                <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+                    <span>Near-Expiry Rebalanced</span>
+                    <i data-lucide="refresh-cw" class="w-4 h-4 text-indigo-400"></i>
+                </div>
+                <div class="text-2xl font-bold text-indigo-300" id="kpiRebalanced">1,420 pk</div>
+                <div class="text-[11px] text-emerald-400 flex items-center mt-1">
+                    <span>₹3.82L Waste Prevented</span>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-xl border border-slate-700/50">
+                <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+                    <span>Active Stockist Nodes</span>
+                    <i data-lucide="truck" class="w-4 h-4 text-blue-400"></i>
+                </div>
+                <div class="text-2xl font-bold text-white">48 Nodes</div>
+                <div class="text-[11px] text-slate-400 flex items-center mt-1">
+                    <span>Assam + 7 NE States</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upper Section: Interactive GIS Map & Corridor Hazard Monitor -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: GIS Map -->
+            <div class="lg:col-span-8 glass-panel rounded-xl p-4 flex flex-col space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-cyan-400"></i>
+                        <h2 class="text-sm font-semibold text-white">Northeast India Supply Chain & Transit Corridor Radar</h2>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span> Normal Transit
+                        </span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 mr-1.5"></span> Flood Watch
+                        </span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-400 mr-1.5"></span> High Bottleneck Risk
+                        </span>
+                    </div>
+                </div>
+
+                <div id="supplyMap"></div>
+
+                <div class="text-[11px] text-slate-400 flex justify-between items-center bg-slate-800/40 px-3 py-2 rounded-lg">
+                    <span>Click any marker to inspect depot stock availability, lead-time variance, and critical SKU buffer health.</span>
+                    <span class="text-cyan-400 font-mono">Telemetry: ASDMA & CWC Flood Feeds</span>
+                </div>
+            </div>
+
+            <!-- Right: Node Inspection & Emergency Indent Trigger -->
+            <div class="lg:col-span-4 glass-panel rounded-xl p-4 flex flex-col space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+                    <h2 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                        <i data-lucide="package" class="w-4 h-4 text-blue-400"></i>
+                        <span id="selectedNodeTitle">Silchar Buffer Depot (Barak Valley)</span>
+                    </h2>
+                    <span id="selectedNodeBadge" class="text-[10px] px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">Vulnerable Corridor</span>
+                </div>
+
+                <div class="space-y-3 flex-1 overflow-y-auto">
+                    <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/60 text-xs space-y-1.5">
+                        <div class="flex justify-between text-slate-400">
+                            <span>Corridor Transit Link:</span>
+                            <span class="text-slate-200 font-medium">NH-6 via Meghalaya</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400">
+                            <span>Predicted Lead Time:</span>
+                            <span class="text-amber-400 font-semibold" id="nodeLeadTime">18 - 25 Days (Flood Spike)</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400">
+                            <span>Current Stock Runway:</span>
+                            <span class="text-rose-400 font-bold" id="nodeRunway">11.4 Days (Deficit Risk)</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400">
+                            <span>Target Pre-Monsoon Buffer:</span>
+                            <span class="text-cyan-400 font-semibold" id="nodeTargetBuffer">35 Days</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Critical SKU Availability Status</h3>
+                    
+                    <div class="space-y-2 text-xs" id="skuStatusList">
+                        <div class="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex items-center justify-between">
+                            <div>
+                                <div class="font-medium text-white">Polyvalent Anti-Snake Venom (10ml)</div>
+                                <div class="text-[11px] text-slate-400">Vital Emergency · Batch #ASV-882</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-bold text-[10px]">Critical (8 vials)</span>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Need: +250 vials</div>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex items-center justify-between">
+                            <div>
+                                <div class="font-medium text-white">Human Insulin 40IU/ml (Cold Chain)</div>
+                                <div class="text-[11px] text-slate-400">Chronic · 2°C–8°C Logged</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 font-bold text-[10px]">Low (42 vials)</span>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Need: +120 vials</div>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex items-center justify-between">
+                            <div>
+                                <div class="font-medium text-white">Cefixime Oral Susp 100mg/5ml</div>
+                                <div class="text-[11px] text-slate-400">Pediatric Antibiotic</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold text-[10px]">Healthy (480 pk)</span>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Runway: 28 Days</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-700/60">
+                    <button id="dispatchIndentBtn" onclick="dispatchEmergencyIndent()" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold text-xs shadow-md shadow-blue-500/20 flex items-center justify-center space-x-1.5 transition">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                        <span>Auto-Generate Pre-Positioning Dispatch</span>
+                    </button>
+                    <div id="dispatchSuccessMsg" class="hidden text-center text-xs text-emerald-400 mt-2 font-medium">
+                        ✓ Transfer PO #DHN-2026-9041 pushed to Dhanuka Central ERP!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Section: AI Forecasting Studio & Scenario Simulator -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Forecast Chart -->
+            <div class="lg:col-span-8 glass-panel rounded-xl p-5 flex flex-col">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+                            <i data-lucide="line-chart" class="w-4 h-4 text-cyan-400"></i>
+                            <span>Temporal Fusion Transformer (TFT) 90-Day Probabilistic Demand Forecast</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">SKU: Amoxicillin + Pot. Clavulanate 625mg & IV Fluids (Combined Monsoon Surge Cohort)</p>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs">
+                        <button class="px-2.5 py-1 rounded bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700">Upper Assam</button>
+                        <button class="px-2.5 py-1 rounded bg-blue-600/30 text-blue-300 border border-blue-500/50">Barak Valley & Hill Nodes</button>
+                    </div>
+                </div>
+
+                <div class="flex-1 min-h-[280px]">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-700/60 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center"><span class="w-3 h-0.5 bg-slate-400 mr-1.5"></span> Historical Sales</span>
+                        <span class="flex items-center"><span class="w-3 h-0.5 bg-cyan-400 mr-1.5"></span> P50 Median Forecast</span>
+                        <span class="flex items-center"><span class="w-3 h-2 bg-cyan-500/20 mr-1.5"></span> P10-P90 Confidence Band</span>
+                        <span class="flex items-center"><span class="w-3 h-0.5 bg-rose-500 border-dashed mr-1.5"></span> Flood Hazard Trigger</span>
+                    </div>
+                    <span class="text-cyan-400 font-mono">Quantile Loss: 0.042 (TFT Best)</span>
+                </div>
+            </div>
+
+            <!-- Simulation Controls -->
+            <div class="lg:col-span-4 glass-panel rounded-xl p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center space-x-2 border-b border-slate-700/60 pb-2 mb-4">
+                        <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>
+                        <h2 class="text-sm font-semibold text-white">Scenario Simulation Engine</h2>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <span class="text-slate-300 font-medium">Monsoon / Flood Severity Index</span>
+                                <span class="text-cyan-400 font-bold" id="floodVal">Level 4 (Severe Washouts)</span>
+                            </div>
+                            <input type="range" min="1" max="5" value="4" class="w-full accent-cyan-400 cursor-pointer" id="floodSlider" oninput="updateScenario()">
+                            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+                                <span>Normal Rain</span>
+                                <span>Moderate</span>
+                                <span>Brahmaputra Peak Inundation</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <span class="text-slate-300 font-medium">Epidemic Outbreak Intensity (IDSP)</span>
+                                <span class="text-amber-400 font-bold" id="outbreakVal">+45% (JE & Dengue Spike)</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="45" class="w-full accent-amber-400 cursor-pointer" id="outbreakSlider" oninput="updateScenario()">
+                            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+                                <span>Baseline</span>
+                                <span>+50% Surge</span>
+                                <span>+100% Dual Epidemic</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <span class="text-slate-300 font-medium">Transit Corridor Delay Add-on</span>
+                                <span class="text-rose-400 font-bold" id="delayVal">+16 Days</span>
+                            </div>
+                            <input type="range" min="0" max="30" value="16" class="w-full accent-rose-400 cursor-pointer" id="delaySlider" oninput="updateScenario()">
+                            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+                                <span>0 Days</span>
+                                <span>+15 Days</span>
+                                <span>+30 Days Bridge Washout</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 mt-4 text-xs space-y-2">
+                    <div class="text-slate-300 font-semibold flex items-center gap-1.5">
+                        <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i>
+                        <span>MEIO Buffer Recommendation:</span>
+                    </div>
+                    <div class="text-slate-400 text-[11px] leading-relaxed">
+                        Under simulated parameters, replenish <strong class="text-cyan-300">+4,200 packs</strong> before Day 14 to prevent a projected <strong class="text-rose-400">42% stockout catastrophe</strong> in peripheral districts.
+                    </div>
+                    <button onclick="applyOptimizedPlan()" class="w-full py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition">
+                        Apply MILP Optimal Allocation
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lower Section: Expiry Arbitrage Matrix & Rural WhatsApp Bot Simulator -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- FEFO Expiry Arbitrage Table -->
+            <div class="lg:col-span-7 glass-panel rounded-xl p-5 flex flex-col space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="arrow-left-right" class="w-4 h-4 text-indigo-400"></i>
+                        <h2 class="text-sm font-semibold text-white">Cross-Tier Expiry Arbitrage & Rebalancing Matrix</h2>
+                    </div>
+                    <span class="text-xs text-indigo-300 bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-800">FEFO Active</span>
+                </div>
+
+                <p class="text-xs text-slate-400">The algorithm automatically identifies slow-moving batches nearing 6-month expiry at low-velocity stockists and re-routes them to high-velocity dispensaries to prevent waste.</p>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-slate-400 border-b border-slate-700/80">
+                                <th class="pb-2 font-medium">Batch / SKU</th>
+                                <th class="pb-2 font-medium">Origin Depot</th>
+                                <th class="pb-2 font-medium">Expiry</th>
+                                <th class="pb-2 font-medium">Qty</th>
+                                <th class="pb-2 font-medium">Recommended Destination</th>
+                                <th class="pb-2 font-medium text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800" id="arbitrageTable">
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="py-2.5 font-medium text-white">
+                                    #ARB-204 · Rabies Antiserum 1000IU
+                                </td>
+                                <td class="py-2.5 text-slate-300">Tezpur Sub-Depot (Slow)</td>
+                                <td class="py-2.5 text-amber-400 font-mono">4.5 Mos</td>
+                                <td class="py-2.5 text-slate-200">180 vials</td>
+                                <td class="py-2.5 text-emerald-400 font-medium">Silchar Civil Hospital Hub (High)</td>
+                                <td class="py-2.5 text-right">
+                                    <button onclick="executeRebalance(this, 'ARB-204')" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[11px] font-medium transition">
+                                        Rebalance
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="py-2.5 font-medium text-white">
+                                    #CTX-911 · Ceftriaxone 1g Inj
+                                </td>
+                                <td class="py-2.5 text-slate-300">Jorhat Wholesaler</td>
+                                <td class="py-2.5 text-amber-400 font-mono">5.2 Mos</td>
+                                <td class="py-2.5 text-slate-200">640 vials</td>
+                                <td class="py-2.5 text-emerald-400 font-medium">Guwahati Medical College Node</td>
+                                <td class="py-2.5 text-right">
+                                    <button onclick="executeRebalance(this, 'CTX-911')" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[11px] font-medium transition">
+                                        Rebalance
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="py-2.5 font-medium text-white">
+                                    #ORS-502 · Oral Rehydration Salts
+                                </td>
+                                <td class="py-2.5 text-slate-300">Shillong Retail Cohort</td>
+                                <td class="py-2.5 text-amber-400 font-mono">6.0 Mos</td>
+                                <td class="py-2.5 text-slate-200">1,200 sachet</td>
+                                <td class="py-2.5 text-emerald-400 font-medium">Dhubri Flood Relief Clinic</td>
+                                <td class="py-2.5 text-right">
+                                    <button onclick="executeRebalance(this, 'ORS-502')" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[11px] font-medium transition">
+                                        Rebalance
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Rural Chemist WhatsApp Bot Interactive Mockup -->
+            <div class="lg:col-span-5 glass-panel rounded-xl p-5 flex flex-col space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
+                        <h2 class="text-sm font-semibold text-white">Rural Chemist WhatsApp Conversational Bot</h2>
+                    </div>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">2G / Offline Capable</span>
+                </div>
+
+                <!-- Chat Display -->
+                <div class="bg-slate-900 rounded-lg p-3 flex-1 min-h-[220px] max-h-[240px] overflow-y-auto space-y-2.5 text-xs font-sans" id="chatWindow">
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-[10px] font-bold text-white">MB</div>
+                        <div class="bg-slate-800 text-slate-200 p-2.5 rounded-lg rounded-tl-none max-w-[85%] border border-slate-700">
+                            Namaskar Borthakur Medicos (Silchar)! MediFlow Bot here. Our flood forecast indicates NH-6 delivery delays starting next week. Please confirm current Paracetamol and Anti-venom stocks.
+                            <div class="text-[9px] text-slate-400 mt-1">10:42 AM · Dhanuka Logistics Bot</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start justify-end space-x-2">
+                        <div class="bg-emerald-900/60 text-emerald-100 p-2.5 rounded-lg rounded-tr-none max-w-[85%] border border-emerald-700/60">
+                            Paracetamol syrup 60ml: only 12 bottles left. Need 150 bottles before roads close.
+                            <div class="text-[9px] text-emerald-300/60 mt-1 text-right">10:44 AM · Chemist</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-[10px] font-bold text-white">MB</div>
+                        <div class="bg-slate-800 text-slate-200 p-2.5 rounded-lg rounded-tl-none max-w-[85%] border border-slate-700">
+                            ✓ Requisition #ORD-7721 confirmed! 150 bottles routed from Silchar Buffer Depot. Delivery scheduled for tomorrow morning via priority transit.
+                            <div class="text-[9px] text-slate-400 mt-1">10:44 AM · Auto PO Logged</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Mockup -->
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="chatInput" placeholder="Type message (e.g., 'Stock Cefixime: 5 packs left')..." class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400">
+                    <button onclick="sendChatMessage()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1">
+                        <span>Send</span>
+                        <i data-lucide="send" class="w-3 h-3"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-panel border-t border-slate-800 px-6 py-4 mt-8 text-xs text-slate-400 flex flex-wrap justify-between items-center gap-3">
+        <div>
+            Developed for <strong class="text-white">North East Seva First Innovation Challenge (NESFIC 2026)</strong> | Problem Statement <strong>NESFIC-I-09</strong>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span>Sponsoring Partner: <strong class="text-cyan-400">G.R. Dhanuka Group</strong></span>
+            <span>Grant Cap: <strong class="text-emerald-400">₹40.00 Lakhs</strong></span>
+        </div>
+    </footer>
+
+    <!-- App Logic Script -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. Initialize Leaflet Map
+        const map = L.map('supplyMap').setView([26.2006, 92.9376], 7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            maxZoom: 14,
+            minZoom: 6
+        }).addTo(map);
+
+        // Nodes data
+        const supplyNodes = [
+            { id: 'guwahati', name: 'Guwahati Central C&F Hub (Dhanuka Complex)', coords: [26.1856, 91.7454], type: 'central', status: 'optimal', leadTime: '0 Days (Hub)', runway: '45 Days' },
+            { id: 'tezpur', name: 'Tezpur Staging Depot', coords: [26.6338, 92.8006], type: 'intermediate', status: 'optimal', leadTime: '2 - 3 Days', runway: '32 Days' },
+            { id: 'dibrugarh', name: 'Dibrugarh Super Stockist (Upper Assam)', coords: [27.4728, 94.9120], type: 'stockist', status: 'warning', leadTime: '5 - 7 Days', runway: '18 Days' },
+            { id: 'silchar', name: 'Silchar Buffer Depot (Barak Valley)', coords: [24.8333, 92.7789], type: 'stockist', status: 'critical', leadTime: '18 - 25 Days (Flood)', runway: '11.4 Days' },
+            { id: 'shillong', name: 'Shillong Hill Warehouse', coords: [25.5788, 91.8933], type: 'stockist', status: 'optimal', leadTime: '3 - 4 Days', runway: '28 Days' },
+            { id: 'aizawl', name: 'Aizawl Distribution Depot', coords: [23.7271, 92.7176], type: 'stockist', status: 'warning', leadTime: '12 - 16 Days', runway: '14 Days' },
+            { id: 'dimapur', name: 'Dimapur / Kohima Node', coords: [25.9094, 93.7266], type: 'stockist', status: 'warning', leadTime: '7 - 10 Days', runway: '16 Days' },
+            { id: 'agartala', name: 'Agartala Sub-Depot', coords: [23.8315, 91.2868], type: 'stockist', status: 'warning', leadTime: '14 - 18 Days', runway: '15 Days' }
+        ];
+
+        // Draw corridors
+        const corridors = [
+            { from: [26.1856, 91.7454], to: [26.6338, 92.8006], color: '#10b981', dash: '' }, // Guwahati -> Tezpur
+            { from: [26.6338, 92.8006], to: [27.4728, 94.9120], color: '#f59e0b', dash: '5, 5' }, // Tezpur -> Dibrugarh
+            { from: [26.1856, 91.7454], to: [25.5788, 91.8933], color: '#10b981', dash: '' }, // Guwahati -> Shillong
+            { from: [25.5788, 91.8933], to: [24.8333, 92.7789], color: '#ef4444', dash: '6, 6' }, // Shillong -> Silchar (NH-6 Hazard)
+            { from: [24.8333, 92.7789], to: [23.7271, 92.7176], color: '#f59e0b', dash: '5, 5' }, // Silchar -> Aizawl
+            { from: [26.6338, 92.8006], to: [25.9094, 93.7266], color: '#f59e0b', dash: '5, 5' }, // Tezpur -> Dimapur
+            { from: [24.8333, 92.7789], to: [23.8315, 91.2868], color: '#f59e0b', dash: '5, 5' }  // Silchar -> Agartala
+        ];
+
+        corridors.forEach(c => {
+            L.polyline([c.from, c.to], { color: c.color, weight: 3, dashArray: c.dash, opacity: 0.8 }).addTo(map);
+        });
+
+        // Add Markers
+        supplyNodes.forEach(node => {
+            const color = node.status === 'optimal' ? '#10b981' : (node.status === 'warning' ? '#f59e0b' : '#ef4444');
+            const radius = node.type === 'central' ? 10 : 7;
+
+            const circle = L.circleMarker(node.coords, {
+                radius: radius,
+                fillColor: color,
+                color: '#ffffff',
+                weight: 1.5,
+                opacity: 1,
+                fillOpacity: 0.9
+            }).addTo(map);
+
+            circle.bindTooltip(`<b>${node.name}</b><br/>Lead Time: ${node.leadTime}<br/>Runway: ${node.runway}`, { className: 'bg-slate-900 text-slate-200 border-none' });
+
+            circle.on('click', () => {
+                document.getElementById('selectedNodeTitle').innerText = node.name;
+                document.getElementById('nodeLeadTime').innerText = node.leadTime;
+                document.getElementById('nodeRunway').innerText = node.runway;
+                const badge = document.getElementById('selectedNodeBadge');
+                if (node.status === 'critical') {
+                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800';
+                    badge.innerText = 'High Bottleneck Risk';
+                } else if (node.status === 'warning') {
+                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800';
+                    badge.innerText = 'Flood Warning';
+                } else {
+                    badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800';
+                    badge.innerText = 'Optimal Operations';
+                }
+            });
+        });
+
+        // 2. Initialize Chart.js Forecast
+        const ctx = document.getElementById('forecastChart').getContext('2d');
+        const labels = ['W1 (Actual)', 'W2 (Actual)', 'W3 (Actual)', 'W4 (Actual)', 'W5 (P50)', 'W6 (P50)', 'W7 (Flood Peak)', 'W8 (P50)', 'W9 (P50)', 'W10 (P50)', 'W11 (P50)', 'W12 (P50)'];
+        
+        let historical = [2800, 3100, 2950, 3300, null, null, null, null, null, null, null, null];
+        let p50 = [null, null, null, 3300, 3900, 4800, 6200, 5700, 4600, 3800, 3400, 3200];
+        let p90 = [null, null, null, 3300, 4400, 5600, 7400, 6800, 5400, 4300, 3800, 3500];
+        let p10 = [null, null, null, 3300, 3500, 4200, 5100, 4700, 3900, 3300, 3000, 2900];
+
+        const forecastChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Historical Dispatches',
+                        data: historical,
+                        borderColor: '#94a3b8',
+                        backgroundColor: '#94a3b8',
+                        borderWidth: 2,
+                        tension: 0.2
+                    },
+                    {
+                        label: 'P50 Median Forecast',
+                        data: p50,
+                        borderColor: '#06b6d4',
+                        backgroundColor: '#06b6d4',
+                        borderWidth: 2.5,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'P90 Upper Bound',
+                        data: p90,
+                        borderColor: 'rgba(6, 182, 212, 0.2)',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        fill: '+1',
+                        borderWidth: 1,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'P10 Lower Bound',
+                        data: p10,
+                        borderColor: 'rgba(6, 182, 212, 0.2)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 1,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#cbd5e1', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Scenario updater
+        function updateScenario() {
+            const flood = parseInt(document.getElementById('floodSlider').value);
+            const outbreak = parseInt(document.getElementById('outbreakSlider').value);
+            const delay = parseInt(document.getElementById('delaySlider').value);
+
+            document.getElementById('floodVal').innerText = `Level ${flood} (${flood >= 4 ? 'Severe Washouts' : 'Moderate Inundation'})`;
+            document.getElementById('outbreakVal').innerText = `+${outbreak}% (${outbreak > 30 ? 'JE & Dengue Spike' : 'Seasonal Baseline'})`;
+            document.getElementById('delayVal').innerText = `+${delay} Days`;
+
+            // Adjust peak in chart
+            const multiplier = 1 + (flood * 0.1) + (outbreak * 0.005);
+            forecastChart.data.datasets[1].data[6] = Math.round(4800 * multiplier);
+            forecastChart.data.datasets[2].data[6] = Math.round(5600 * multiplier * 1.15);
+            forecastChart.update();
+        }
+
+        function triggerDemoPrepositioning() {
+            document.getElementById('kpiInStock').innerText = '98.9%';
+            document.getElementById('kpiAlerts').innerText = '0 (Pre-positioned)';
+            document.getElementById('kpiInStock').classList.add('text-emerald-400');
+            alert('✓ Pre-Monsoon Pre-Positioning Buffer Activated!\n3,400 units dispatched to Silchar & Aizawl ahead of forecasted heavy monsoon spell.');
+        }
+
+        function dispatchEmergencyIndent() {
+            document.getElementById('dispatchIndentBtn').disabled = true;
+            document.getElementById('dispatchIndentBtn').innerText = 'Processing via Dhanuka ERP...';
+            setTimeout(() => {
+                document.getElementById('dispatchIndentBtn').classList.add('hidden');
+                document.getElementById('dispatchSuccessMsg').classList.remove('hidden');
+                document.getElementById('nodeRunway').innerText = '36.5 Days (Secured)';
+                document.getElementById('nodeRunway').className = 'text-emerald-400 font-bold';
+            }, 800);
+        }
+
+        function executeRebalance(btn, batchId) {
+            btn.disabled = true;
+            btn.innerText = 'Rebalanced ✓';
+            btn.className = 'px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-medium';
+            const kpi = document.getElementById('kpiRebalanced');
+            kpi.innerText = '1,600 pk';
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatWindow = document.getElementById('chatWindow');
+
+            // User bubble
+            const userBubble = document.createElement('div');
+            userBubble.className = 'flex items-start justify-end space-x-2';
+            userBubble.innerHTML = `
+                <div class="bg-emerald-900/60 text-emerald-100 p-2.5 rounded-lg rounded-tr-none max-w-[85%] border border-emerald-700/60">
+                    ${text}
+                    <div class="text-[9px] text-emerald-300/60 mt-1 text-right">Just now · Chemist</div>
+                </div>
+            `;
+            chatWindow.appendChild(userBubble);
+            input.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Bot reply
+            setTimeout(() => {
+                const botBubble = document.createElement('div');
+                botBubble.className = 'flex items-start space-x-2';
+                botBubble.innerHTML = `
+                    <div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-[10px] font-bold text-white">MB</div>
+                    <div class="bg-slate-800 text-slate-200 p-2.5 rounded-lg rounded-tl-none max-w-[85%] border border-slate-700">
+                        ✓ Requisition logged into Dhanuka ERP! Stock allocated from nearest regional staging hub. Tracking ID: #TRK-9842.
+                        <div class="text-[9px] text-slate-400 mt-1">Just now · MediFlow Bot</div>
+                    </div>
+                `;
+                chatWindow.appendChild(botBubble);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 600);
+        }
+
+        function applyOptimizedPlan() {
+            alert('✓ Google OR-Tools MILP optimization executed!\nRe-allocated 4,200 packs across 8 Northeast hubs, reducing stockout vulnerability by 86%.');
+            document.getElementById('kpiInStock').innerText = '97.8%';
+        }
+    </script>
+</body>
+</html>
