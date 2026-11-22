@@ -298,7 +298,28 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
     story.append(Paragraph("To satisfy the mandatory requirement that a proposal narrative alone is insufficient, this section presents empirical simulation results, forecasting model comparisons, architectural blueprints, and screen wireframes.", body_style))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph("1. Model Performance Benchmark: TFT vs Conventional Forecasting", h2_style))
+    story.append(Paragraph("1. Regional Multi-Tier Supply Chain & Corridor Vulnerability Map", h2_style))
+    story.append(Paragraph("The diagram below illustrates the hierarchical flow from G.R. Dhanuka Group central C&F hubs to district staging depots and remote health facilities across Northeast India, highlighting high-hazard flood corridors (e.g. NH-6 via Meghalaya).", body_style))
+    story.append(Spacer(1, 4))
+    if os.path.exists('assets/multi_tier_network.png'):
+        story.append(Image('assets/multi_tier_network.png', width=450, height=225))
+        story.append(Spacer(1, 8))
+
+    story.append(Paragraph("2. Enterprise Solution Architecture Blueprint", h2_style))
+    story.append(Paragraph("The platform connects legacy stockist ERPs (Marg, Tally, Busy) and real-time environmental APIs (IMD, CWC, ASDMA) to our cloud-native AI forecasting and optimization pipeline.", body_style))
+    story.append(Spacer(1, 4))
+    if os.path.exists('assets/architecture_diagram.png'):
+        story.append(Image('assets/architecture_diagram.png', width=450, height=245))
+        story.append(Spacer(1, 8))
+
+    story.append(Paragraph("3. Cross-Tier Expiry Arbitrage & FEFO Rebalancing Mechanism", h2_style))
+    story.append(Paragraph("Graph-theoretic matching re-routes near-expiry batches from slow-moving nodes to high-velocity emergency wards, eliminating waste and averting stockouts.", body_style))
+    story.append(Spacer(1, 4))
+    if os.path.exists('assets/arbitrage_flow.png'):
+        story.append(Image('assets/arbitrage_flow.png', width=450, height=225))
+        story.append(Spacer(1, 8))
+
+    story.append(Paragraph("4. Model Performance Benchmark: TFT vs Conventional Forecasting", h2_style))
     story.append(Paragraph("We evaluated our multi-horizon Temporal Fusion Transformer (TFT) against standard industry baselines (ARIMA/SARIMAX, Holt-Winters, and Facebook Prophet) using 24 months of regional pharmaceutical dispatch data spanning 120 critical SKUs.", body_style))
     story.append(Spacer(1, 4))
 
@@ -332,11 +353,11 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
         story.append(Image('assets/forecast_performance.png', width=450, height=230))
         story.append(Spacer(1, 8))
 
-    story.append(Paragraph("2. Discrete-Event Highway Corridor Flood Simulation (Guwahati -> Silchar / Barak Valley)", h2_style))
+    story.append(Paragraph("5. Discrete-Event Highway Corridor Flood Simulation (Guwahati -> Silchar / Barak Valley)", h2_style))
     story.append(Paragraph("We simulated a realistic 21-day washout scenario along NH-6 (connecting Guwahati through Meghalaya into Barak Valley, Tripura, and Mizoram) during peak July monsoon. Under standard heuristics, retail pharmacies experienced catastrophic stockouts (41.8% stockout rate). MediFlow-NE’s proactive pre-positioning triggered 14 days prior maintained a 94.6% in-stock service level throughout the isolation period.", body_style))
     story.append(Spacer(1, 8))
 
-    story.append(Paragraph("3. 12-Month Phased Implementation Roadmap", h2_style))
+    story.append(Paragraph("6. 12-Month Phased Implementation Roadmap", h2_style))
     if os.path.exists('assets/timeline_gantt.png'):
         story.append(Image('assets/timeline_gantt.png', width=450, height=190))
         story.append(Spacer(1, 8))
