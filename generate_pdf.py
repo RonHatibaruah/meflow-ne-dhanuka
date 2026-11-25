@@ -361,7 +361,7 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
         story.append(Image('assets/forecast_performance.png', width=450, height=230))
         story.append(Spacer(1, 8))
 
-    story.append(Paragraph("5. Discrete-Event Highway Corridor Flood Simulation (Guwahati -> Silchar / Barak Valley)", h2_style))
+    story.append(Paragraph("5. Discrete-Event Highway Corridor Flood Simulation (Guwahati to Silchar / Barak Valley)", h2_style))
     story.append(Paragraph("We simulated a realistic 21-day washout scenario along NH-6 (connecting Guwahati through Meghalaya into Barak Valley, Tripura, and Mizoram) during peak July monsoon. Under standard heuristics, retail pharmacies experienced catastrophic stockouts (41.8% stockout rate). MediFlow-NE’s proactive pre-positioning triggered 14 days prior maintained a 94.6% in-stock service level throughout the isolation period.", body_style))
     story.append(Spacer(1, 4))
     if os.path.exists('assets/infographic_04_flood_simulation.jpg'):
@@ -440,8 +440,8 @@ def build_pdf(filename="NESFIC_I_09_Dhanuka_Proposal_PoW.pdf"):
     story.append(Paragraph("5. Live Prototype & Interactive Application URL", h2_style))
     story.append(Paragraph("An interactive, high-fidelity web demonstration of MediFlow-NE has been compiled and is hosted within the project codebase (runnable via standard web browser or local server):", body_style))
     story.append(Paragraph("&bull; <b>Interactive Web Application:</b> Included in project bundle (<code>app/index.html</code>) with live Northeast GIS map, forecast simulator, stockout alert radar, and ERP ingestion simulator.", bullet_style))
-    story.append(Paragraph("&bull; <b>Demo / Product Video URL:</b> https://startup.assam.gov.in/nesfic26/demo/nesfic-i-09 (Placeholder for live screencast)", bullet_style))
-    story.append(Paragraph("&bull; <b>Product / Code Repository:</b> https://github.com/innovate-ne/mediflow-ne-dhanuka", bullet_style))
+    story.append(Paragraph("&bull; <b>Demo / Product Video URL:</b> https://meflow-ne-dhanuka.pages.dev (Placeholder for live screencast)", bullet_style))
+    story.append(Paragraph("&bull; <b>Product / Code Repository:</b> https://github.com/RonHatibaruah/meflow-ne-dhanuka", bullet_style))
     story.append(Spacer(1, 10))
 
     story.append(Paragraph("6. Compliance & Risk Governance Verification", h2_style))

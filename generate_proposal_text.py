@@ -23,7 +23,7 @@ Key Gaps Addressed:
 
 Intended Outcomes:
 We deploy MediFlow-NE to achieve:
-• >85% forecast accuracy (reducing Mean Absolute Percentage Error from ~38% to under 12%);
+• Greater Than 85% forecast accuracy (reducing Mean Absolute Percentage Error from ~38% to under 12%);
 • 65% reduction in stockouts of critical and life-saving formulations across peripheral health nodes;
 • 45% reduction in near-expiry medicine scrap across stockist networks through proactive First-Expired, First-Out (FEFO) automated cross-stockist rebalancing;
 • Guaranteed 30-day pre-monsoon buffer stock visibility across high-vulnerability corridors."""
@@ -115,7 +115,7 @@ sections["5. Development methodology & intermediate steps"] = """We adopt an Agi
 • Train and tune baseline models (SARIMAX, LightGBM) and deep learning models (Temporal Fusion Transformers) with quantile loss functions.
 • Implement Google OR-Tools MILP optimization models for Multi-Echelon Inventory Optimization (MEIO) with stochastic lead-time parameters.
 • Backtest against historical 2022–2024 Northeast monsoon disruption events.
-• Output: Validated forecasting and replenishment engines achieving target MAPE < 15% in backtests.
+• Output: Validated forecasting and replenishment engines achieving target MAPE Smaller Than 15% in backtests.
 
 4. Multi-Tier UI/UX, Offline PWA & Bot Engineering (Months 5–7):
 • Develop the Central Executive Command Web Portal, Stockist Planning Portal, and offline-first Chemist PWA.
@@ -124,8 +124,8 @@ sections["5. Development methodology & intermediate steps"] = """We adopt an Agi
 
 5. Field Pilot Deployment & Dhanuka Hub Integration (Months 7–10):
 • Deploy the platform in a controlled live pilot across G.R. Dhanuka Group’s Guwahati central warehouse and 2 selected supply routes:
-  - Route A: Guwahati -> Tezpur -> Dibrugarh (Upper Assam);
-  - Route B: Guwahati -> Meghalaya -> Silchar / Barak Valley (flood-vulnerable corridor).
+  - Route A: Guwahati to Tezpur to Dibrugarh (Upper Assam);
+  - Route B: Guwahati to Meghalaya to Silchar / Barak Valley (flood-vulnerable corridor).
 • Onboard 25 stockists and 100 retail pharmacies onto the platform.
 • Run weekly parallel runs comparing AI-recommended replenishment indents against conventional heuristic orders.
 • Output: Empirical 90-day pilot performance report, fine-tuned model parameters, and user feedback logs.
@@ -212,16 +212,16 @@ Total Effort: 60 Person-Months of dedicated technical and domain manpower."""
 sections["9. Testing, validation & evidence"] = """MediFlow-NE follows a rigorous multi-tiered testing framework combining automated software verification, historical retrospective backtesting, synthetic stress-testing, and a live two-corridor field pilot.
 
 1. Development Testing Framework:
-• Unit & Integration Testing: >85% code test coverage using PyTest and Jest; automated CI/CD pipelines run linting, schema validation, and end-to-end API regression tests on every commit.
+• Unit & Integration Testing: Greater Than 85% code test coverage using PyTest and Jest; automated CI/CD pipelines run linting, schema validation, and end-to-end API regression tests on every commit.
 • Offline Resilience Testing: Simulated 2G network throttle and complete network blackout scenarios to verify IndexedDB caching and seamless background synchronization of the edge PWA.
 • Security & VAPT Audits: Automated vulnerability scanning with OWASP ZAP, dependency auditing, and external black-box penetration testing.
 
 2. Proposed Performance & Quality Measures:
-• Forecast Accuracy: Measured via Weighted Mean Absolute Percentage Error (WMAPE) and Root Mean Squared Error (RMSE). Target: WMAPE < 12% across essential SKUs (baseline ~38%).
-• Service Level (OTIF): On-Time In-Full order fulfillment rate. Target: >95% across participating stockists during monsoon months.
-• Stockout Rate: Percentage of days essential life-saving SKUs are unavailable. Target: Reduction from historical 24.5% to < 5% at pilot pharmacies.
-• Expiry Write-Off Reduction: Total value of expired stock reclaimed or rebalanced. Target: >40% reduction through proactive FEFO alerts.
-• System Responsiveness: End-to-end forecast generation time < 15 minutes for 100,000 SKU-location combinations; API response latency < 200ms.
+• Forecast Accuracy: Measured via Weighted Mean Absolute Percentage Error (WMAPE) and Root Mean Squared Error (RMSE). Target: WMAPE Smaller Than 12% across essential SKUs (baseline ~38%).
+• Service Level (OTIF): On-Time In-Full order fulfillment rate. Target: Greater Than 95% across participating stockists during monsoon months.
+• Stockout Rate: Percentage of days essential life-saving SKUs are unavailable. Target: Reduction from historical 24.5% to Smaller Than 5% at pilot pharmacies.
+• Expiry Write-Off Reduction: Total value of expired stock reclaimed or rebalanced. Target: Greater Than 40% reduction through proactive FEFO alerts.
+• System Responsiveness: End-to-end forecast generation time Smaller Than 15 minutes for 100,000 SKU-location combinations; API response latency Smaller Than 200ms.
 
 3. Evidence of Progress & Prior Research:
 • Functional MVP Validated: We have designed and benchmarked the core forecasting engine using 24 months of multi-tier pharmaceutical distribution data. The Temporal Fusion Transformer model demonstrated superior accuracy over traditional statistical baselines (ARIMA/Prophet), capturing non-linear flood and epidemic demand spikes with high precision.
@@ -292,7 +292,7 @@ Pilot Validation Plan in Stated Context:
 The solution will be validated through a phased 90-day live pilot within G.R. Dhanuka Group’s active distribution network in Assam:
 • Scope: Guwahati central C&F warehouse + 2 strategic corridors (Guwahati-Tezpur-Dibrugarh and Guwahati-Shillong-Silchar), encompassing 25 stockists and 100 retail chemists.
 • Validation Protocol: Parallel live run comparing MediFlow-NE’s automated AI replenishment recommendations against standard human planner indents.
-• Success Criteria: Achieve >85% forecast accuracy (MAPE < 15%), >60% reduction in stockout occurrences of monitored critical SKUs, and zero platform downtime during simulated network disconnects."""
+• Success Criteria: Achieve Greater Than 85% forecast accuracy (MAPE Smaller Than 15%), Greater Than 60% reduction in stockout occurrences of monitored critical SKUs, and zero platform downtime during simulated network disconnects."""
 
 print("Checking word counts...")
 total_words = 0
